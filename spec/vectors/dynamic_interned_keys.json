@@ -1,0 +1,9 @@
+{
+  "case": "dynamic",
+  "note": "map keys that exist in the header key table use the interned form",
+  "keys": ["rsrp", "band", "speed"],
+  "values": [
+    {"rsrp": -103, "band": 3, "speed": 27.5},
+    {"rsrp": -140, "band": 0, "speed": 0.0}
+  ]
+}

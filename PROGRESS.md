@@ -29,7 +29,7 @@ and the removal is stated in the README.
 | phase | scope | status |
 |------:|-------|--------|
 | 0 | foundation: workspace, SPEC draft, datasets, competitor crate compiles | **done** |
-| 1 | core: Fixed (aligned + packed) + Dynamic, errors, golden vectors | pending |
+| 1 | core: Fixed (aligned + packed) + Dynamic, errors, golden vectors | **done** |
 | 2 | Batch/columnar: encodings one at a time, effort levels, views, accessors | pending |
 | 3 | benchmarks per the measurement protocol → `results.json` (**GATE**) | pending |
 | 4 | optimization loop on losing/tied rows (**GATE**) | pending |
@@ -159,6 +159,49 @@ All competitors live in `crates/slim-bench` only. Resolved with
 * **D-0010** Dynamic mode keeps `Float` as raw `f64` only. An `f32` form is
   *reserved* and rejected in v1, because downcasting `f64 → f32` would break
   the bit-exactness rule.
+* **D-0011** A Fixed `f32` field is carried as its raw IEEE-754 bit pattern
+  (`Scalar::F32Bits`), not as a narrowed `f64`. `f32 → f64 → f32` quiets a
+  signalling NaN, which would silently break the "lossless means bit-exact"
+  rule; the vectors `fixed_aligned_extremes` (`7f800001`) and `dynamic_all_kinds`
+  pin this.
+* **D-0012** Dynamic integer form choice is a pure function of the value, with
+  no effort knob in v1: `fixint` for `-128..=127`, else zigzag varint, else
+  two's-complement varint for a negative value that would need 9 bytes, else raw
+  `i64` when zigzag would need 10 bytes. `i64::MIN`/`MAX` are therefore exact in
+  at most 9 bytes and `u64::MAX` in 9. Decoders accept all four forms.
+* **D-0013** `range` is defined for integral and bool types only. On a float
+  field it is a schema error (`UnsupportedLayout`), because "value − min" is not
+  representable for `NaN`; floats that need less precision use the explicitly
+  lossy `quantize`.
+* **D-0014** A Fixed body stores the **size of the first record** as `stride`
+  (never 0). For a fixed-width or `packed` layout that makes the body exactly
+  `record_count * stride` bytes; for a layout with `str`/`bytes`/`Vec<T>` the
+  records differ in size and a reader walks them in order. A stored `stride`
+  below the reader's computed stride is still `MissingField` (R4).
+* **D-0015** JSON conversion (§4.2) is hand-written in the core: an integer that
+  fits `i64` is `Int`, one above it is `UInt`, an integer outside `u64` is
+  `NumberOutOfRange`, and any fraction or exponent is `Float`. Writing appends
+  `.0` to a float that would otherwise re-parse as an integer, rejects
+  non-finite floats, and keeps duplicate object keys in `Value` (only the
+  binary decoder rejects them). `bytes` has no JSON spelling and renders as a
+  hex string, for tooling only.
+
+---
+
+### Phase 1 result
+
+`crates/slimpack` implements the header, `Limits`, the canonical varint codec,
+the schema model and layout engine, both Fixed layouts, and Dynamic values with
+their binary and JSON forms: 135 unit tests plus 5 vector tests, zero runtime
+dependencies, `#![forbid(unsafe_code)]`, clippy clean with `-D warnings`.
+
+Nine accepted vectors and fifteen negative vectors are pinned under
+`spec/vectors/`. The §2.5 worked example is read straight out of `SPEC.md` by
+the test harness, so spec and implementation cannot drift apart silently.
+
+Not in Phase 1, by design: Batch (§3), nested struct inlining, lossy
+`quantize`, and any reader that needs a schema resolver — those are Phases 2,
+5 and 6.
 
 ---
 

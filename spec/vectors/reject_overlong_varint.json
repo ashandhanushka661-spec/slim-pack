@@ -1,0 +1,6 @@
+{
+  "case": "reject",
+  "note": "an overlong (non-canonical) varint gives two byte sequences for one value",
+  "bytes": "53 4c 4d 50 01 03 00 00 01 51 80 00",
+  "expect_error": "PaddingBitsSet"
+}

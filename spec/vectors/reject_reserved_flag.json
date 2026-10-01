@@ -1,0 +1,6 @@
+{
+  "case": "reject",
+  "note": "reserved flag bit 2 must be zero",
+  "bytes": "53 4c 4d 50 01 01 04 00",
+  "expect_error": "ReservedBitsSet"
+}

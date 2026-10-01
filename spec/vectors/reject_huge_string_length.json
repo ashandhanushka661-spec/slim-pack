@@ -1,0 +1,6 @@
+{
+  "case": "reject",
+  "note": "a declared string length of 2^60 must be rejected before anything is allocated",
+  "bytes": "53 4c 4d 50 01 03 00 00 01 51 80 80 80 80 80 80 80 80 01",
+  "expect_error": "LimitExceeded"
+}

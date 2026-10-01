@@ -1,0 +1,11 @@
+{
+  "case": "fixed",
+  "note": "aligned layout with str, bytes and Vec<u16>",
+  "mode": "fixed",
+  "layout": "aligned",
+  "fields": [
+    {"name": "label", "type": "str", "value": "cell-A"},
+    {"name": "raw", "type": "bytes", "hex": "00ff10"},
+    {"name": "levels", "type": "Vec<u16>", "values": [0, 1, 4095, 65535]}
+  ]
+}

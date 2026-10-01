@@ -1,0 +1,17 @@
+{
+  "case": "reject",
+  "note": "a packed range field holding offset 97, one past the 97 value range",
+  "bytes": "53 4c 4d 50 01 01 00 00 01 01 61",
+  "expect_error": "ValueOutOfRange",
+  "layout": "packed",
+  "layout_fields": [
+    {
+      "name": "rsrp",
+      "type": "i16",
+      "range": [
+        -140,
+        -44
+      ]
+    }
+  ]
+}

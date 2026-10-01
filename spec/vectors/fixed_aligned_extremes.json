@@ -1,0 +1,17 @@
+{
+  "case": "fixed",
+  "note": "lossless extremes: wrapping integers and IEEE-754 bit patterns",
+  "mode": "fixed",
+  "layout": "aligned",
+  "fields": [
+    {"name": "i64_min", "type": "i64", "value": -9223372036854775808},
+    {"name": "i64_max", "type": "i64", "value": 9223372036854775807},
+    {"name": "u64_max", "type": "u64", "value": 18446744073709551615},
+    {"name": "i8_min", "type": "i8", "value": -128},
+    {"name": "neg_zero_f32", "type": "f32", "f32bits": "80000000"},
+    {"name": "snan_f32", "type": "f32", "f32bits": "7f800001"},
+    {"name": "qnan_f32", "type": "f32", "f32bits": "7fc00042"},
+    {"name": "neg_inf_f64", "type": "f64", "f64bits": "fff0000000000000"},
+    {"name": "qnan_f64", "type": "f64", "f64bits": "7ff80000deadbeef"}
+  ]
+}

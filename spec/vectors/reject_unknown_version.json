@@ -1,0 +1,6 @@
+{
+  "case": "reject",
+  "note": "version 2 is not this reader's version",
+  "bytes": "53 4c 4d 50 02 01 00 00",
+  "expect_error": "UnsupportedVersion"
+}

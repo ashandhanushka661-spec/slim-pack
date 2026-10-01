@@ -4,8 +4,10 @@
 //! SlimPack: a spec-first binary format for high-throughput telemetry and
 //! structured records.
 //!
-//! Status: Phase 0 skeleton. The format specification lives in
-//! `/spec/SPEC.md`; the implementation is built in later phases against it.
+//! Status: Phase 1 (header, Fixed `aligned`/`packed`, Dynamic, JSON). Batch
+//! mode (§3) arrives in Phase 2. The format specification lives in
+//! `/spec/SPEC.md`; the implementation is built against it phase by phase, and
+//! `/spec/vectors` pins the bytes.
 //!
 //! Hard rules this crate must never break:
 //!
@@ -15,3 +17,17 @@
 //! * lossless means bit-exact (float NaN payloads and `-0.0` round-trip),
 //! * lossy features (quantization) are explicit per-field opt-ins and are
 //!   never reported in lossless results.
+
+pub mod dynamic;
+mod error;
+pub mod fixed;
+pub mod header;
+pub mod limits;
+pub mod schema;
+pub mod varint;
+
+pub use dynamic::Value;
+pub use error::{Limit, Result, SlimError};
+pub use header::{Header, Section};
+pub use limits::Limits;
+pub use schema::{Attr, FieldSpec, Layout, LayoutKind, StructSpec, Type};

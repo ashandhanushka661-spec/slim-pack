@@ -1,0 +1,6 @@
+{
+  "case": "reject",
+  "note": "a Str payload that is not valid UTF-8",
+  "bytes": "53 4c 4d 50 01 03 00 00 01 50 02 ff fe",
+  "expect_error": "InvalidUtf8"
+}

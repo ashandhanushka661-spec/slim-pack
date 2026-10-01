@@ -1,0 +1,12 @@
+{
+  "case": "fixed",
+  "note": "packed lossless extremes: range offsets, bits on a signed field, bool bit",
+  "mode": "fixed",
+  "layout": "packed",
+  "fields": [
+    {"name": "rsrp_min", "type": "i16", "range": [-140, -44], "value": -140},
+    {"name": "rsrp_max", "type": "i16", "range": [-140, -44], "value": -44},
+    {"name": "temp", "type": "i16", "bits": 12, "value": -2048},
+    {"name": "flag", "type": "bool", "value": true}
+  ]
+}

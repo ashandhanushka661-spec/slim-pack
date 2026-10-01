@@ -1,0 +1,6 @@
+{
+  "case": "reject",
+  "note": "the reserved header byte must be zero",
+  "bytes": "53 4c 4d 50 01 01 00 01",
+  "expect_error": "ReservedBitsSet"
+}

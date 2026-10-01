@@ -1,0 +1,6 @@
+{
+  "case": "reject",
+  "note": "duplicate map keys are ambiguous and therefore an error on decode",
+  "bytes": "53 4c 4d 50 01 03 00 00 01 80 02 50 01 61 20 01 50 01 61 20 02",
+  "expect_error": "DuplicateKey"
+}

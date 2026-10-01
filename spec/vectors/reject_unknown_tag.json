@@ -1,0 +1,6 @@
+{
+  "case": "reject",
+  "note": "dynamic value kind 9 is not defined",
+  "bytes": "53 4c 4d 50 01 03 00 00 01 90",
+  "expect_error": "UnknownEncoding"
+}

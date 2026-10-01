@@ -1,0 +1,6 @@
+{
+  "case": "reject",
+  "note": "a dynamic body with one more value than value_count declares",
+  "bytes": "53 4c 4d 50 01 03 00 00 01 20 01 00",
+  "expect_error": "TrailingBytes"
+}

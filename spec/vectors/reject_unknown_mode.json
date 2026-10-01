@@ -1,0 +1,6 @@
+{
+  "case": "reject",
+  "note": "mode byte 9 is not defined by this version",
+  "bytes": "53 4c 4d 50 01 09 00 00",
+  "expect_error": "UnsupportedMode"
+}

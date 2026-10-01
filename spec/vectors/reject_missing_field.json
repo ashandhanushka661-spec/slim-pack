@@ -1,0 +1,11 @@
+{
+  "case": "reject",
+  "note": "stored stride 1 is smaller than the reader's known stride 2 (SPEC R4)",
+  "bytes": "53 4c 4d 50 01 01 00 00 01 01 01",
+  "expect_error": "MissingField",
+  "layout": "aligned",
+  "layout_fields": [
+    {"name": "a", "type": "i16"},
+    {"name": "b", "type": "i16"}
+  ]
+}

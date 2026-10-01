@@ -1,0 +1,11 @@
+{
+  "case": "fixed",
+  "note": "SPEC 2.5 worked example: aligned layout, range has no effect, stride 7",
+  "mode": "fixed",
+  "layout": "aligned",
+  "fields": [
+    {"name": "rsrp", "type": "i16", "range": [-140, -44], "value": -103},
+    {"name": "band", "type": "u8", "value": 3},
+    {"name": "speed", "type": "f32", "f32bits": "41dc0000", "value": 27.5}
+  ]
+}

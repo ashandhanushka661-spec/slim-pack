@@ -1,0 +1,12 @@
+{
+  "case": "reject",
+  "note": "an aligned bool byte other than 0x00 or 0x01",
+  "bytes": "53 4c 4d 50 01 01 00 00 01 01 7f",
+  "expect_error": "InvalidBool",
+  "layout_fields": [
+    {
+      "name": "flag",
+      "type": "bool"
+    }
+  ]
+}

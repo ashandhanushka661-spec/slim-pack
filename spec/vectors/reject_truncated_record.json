@@ -1,0 +1,24 @@
+{
+  "case": "reject",
+  "note": "fixed body declares 1 record of 7 bytes but only 3 follow",
+  "bytes": "53 4c 4d 50 01 01 00 00 01 07 99 ff 03",
+  "expect_error": "Truncated",
+  "layout_fields": [
+    {
+      "name": "rsrp",
+      "type": "i16",
+      "range": [
+        -140,
+        -44
+      ]
+    },
+    {
+      "name": "band",
+      "type": "u8"
+    },
+    {
+      "name": "speed",
+      "type": "f32"
+    }
+  ]
+}

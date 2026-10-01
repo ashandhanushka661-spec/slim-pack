@@ -72,12 +72,20 @@ Body (after the 8-byte header):
 
 ```
 varint  record_count
-varint  stride          // bytes per record, >= 1
-u8[]    records         // record_count * stride bytes
+varint  stride          // size of the FIRST record, >= 1
+u8[]    records         // record_count records
 ```
 
 `stride` exists so that a reader which knows only some of the fields can skip
 the rest ([schema evolution](#7-schema-evolution)).
+
+* When every record has the same size (all fixed-width layouts, and every
+  `packed` layout) the body is exactly `record_count * stride` bytes.
+* When the layout contains `str`, `bytes` or `Vec<T>` fields, records have
+  different sizes: `stride` is then only the first record's size, and a reader
+  must walk the records in order instead of jumping by `stride`.
+* `stride` is therefore **never 0**. A writer with no records still stores the
+  schema's fixed prefix length, or 1 when that is 0.
 
 ### 2.1 Type codes (used only by the §1.2 layout descriptor)
 
@@ -105,7 +113,8 @@ the rest ([schema evolution](#7-schema-evolution)).
 natural width in bytes. The offset of field *i* is the sum of the widths of
 fields `0..i`. There is **no padding and no alignment requirement**: field
 offsets are byte-aligned but not necessarily word-aligned, which is what
-makes the layout dense. `stride` = total width.
+makes the layout dense. `stride` = total width, or the size of the first record
+when a field is variable length (§2 body).
 
 | type | bytes |
 |------|-------|
@@ -566,6 +575,15 @@ Vectors are **generated from the implementation** and pinned by tests
 format version makes the test suite fail. Every mode is covered, plus
 truncation, reserved-bit and limit violations (each expected to yield a
 specific `SlimError` variant).
+
+Regenerate them after an intentional format change with:
+
+```
+SLIMPACK_BLESS=1 cargo test -p slimpack --test vectors
+```
+
+The `tests/vectors.rs` harness also reads the hex out of §2.5 itself, so the
+worked example and the implementation cannot drift apart silently.
 
 ## 11. Versioning
 
