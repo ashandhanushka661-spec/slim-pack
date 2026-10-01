@@ -1,0 +1,21 @@
+[package]
+name = "slimpack-derive"
+description = "#[derive(SlimPack)] procedural macro for the SlimPack format"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+proc-macro = true
+
+# The proc-macro crate may use syn/quote (core crate stays dependency-free).
+[dependencies]
+slimpack = { path = "../slimpack", version = "0.2.0" }
+syn = { version = "=3.0.6", features = ["full", "extra-traits"] }
+quote = "=1.0.47"
+proc-macro2 = "=1.0.107"
+
+[dev-dependencies]
+slimpack = { path = "../slimpack" }

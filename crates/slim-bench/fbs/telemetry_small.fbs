@@ -1,0 +1,10 @@
+namespace slim_bench.fb;
+
+// Dataset a: single telemetry record.
+table TelemetrySmall {
+  rsrp: byte;
+  band: ubyte;
+  speed: float;
+}
+
+root_type TelemetrySmall;

@@ -1,0 +1,15 @@
+namespace slim_bench.fb;
+
+// Dataset c: user records with strings, bools and optional fields.
+table User {
+  id: uint;
+  name: string;
+  email: string;
+  active: bool;
+  age: ushort;
+  city: string;
+  tags: [string];
+  score: float;
+}
+
+root_type User;

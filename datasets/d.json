@@ -1,0 +1,386 @@
+{
+  "name": "ingest-edge",
+  "version": 3,
+  "debug": false,
+  "limits": {
+    "max_records": 1000000,
+    "max_bytes": 268435456,
+    "timeout_ms": 2500
+  },
+  "backends": [
+    {
+      "kind": "sqlite",
+      "weight": 0.68,
+      "hosts": [
+        "archive-ap-south-1-0.0.example.net"
+      ],
+      "tls": false
+    },
+    {
+      "kind": "kafka",
+      "weight": 0.9,
+      "hosts": [
+        "core-ap-south-1-1.0.example.net",
+        "ingest-eu-central-1-1.1.example.net",
+        "replica-eu-west-1-1.2.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "sqlite",
+      "weight": 0.12,
+      "hosts": [
+        "replica-us-east-1-2.0.example.net",
+        "archive-eu-west-1-2.1.example.net",
+        "core-eu-central-1-2.2.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "s3",
+      "weight": 0.81,
+      "hosts": [
+        "edge-eu-west-1-3.0.example.net",
+        "replica-eu-west-1-3.1.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "grpc",
+      "weight": 0.29,
+      "hosts": [
+        "ingest-us-east-1-4.0.example.net",
+        "replica-us-east-1-4.1.example.net",
+        "ingest-eu-central-1-4.2.example.net",
+        "edge-ap-south-1-4.3.example.net"
+      ],
+      "tls": false
+    },
+    {
+      "kind": "s3",
+      "weight": 0.38,
+      "hosts": [
+        "core-us-east-1-5.0.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "sqlite",
+      "weight": 0.089999996,
+      "hosts": [
+        "ingest-us-east-1-6.0.example.net",
+        "replica-ap-south-1-6.1.example.net",
+        "core-eu-central-1-6.2.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "s3",
+      "weight": 0.22,
+      "hosts": [
+        "replica-ap-south-1-7.0.example.net",
+        "replica-ap-south-1-7.1.example.net",
+        "ingest-us-east-1-7.2.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "kafka",
+      "weight": 0.29,
+      "hosts": [
+        "archive-us-east-1-8.0.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "sqlite",
+      "weight": 0.26,
+      "hosts": [
+        "ingest-us-east-1-9.0.example.net",
+        "archive-ap-south-1-9.1.example.net",
+        "archive-eu-west-1-9.2.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "kafka",
+      "weight": 0.42,
+      "hosts": [
+        "archive-us-east-1-10.0.example.net",
+        "core-us-east-1-10.1.example.net",
+        "replica-eu-central-1-10.2.example.net",
+        "archive-ap-south-1-10.3.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "redis",
+      "weight": 0.45999998,
+      "hosts": [
+        "replica-eu-central-1-11.0.example.net",
+        "ingest-us-east-1-11.1.example.net",
+        "edge-eu-west-1-11.2.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "https",
+      "weight": 0.96,
+      "hosts": [
+        "core-us-east-1-12.0.example.net",
+        "archive-us-east-1-12.1.example.net"
+      ],
+      "tls": false
+    },
+    {
+      "kind": "kafka",
+      "weight": 0.03,
+      "hosts": [
+        "archive-us-east-1-13.0.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "kafka",
+      "weight": 0.48999998,
+      "hosts": [
+        "ingest-ap-south-1-14.0.example.net",
+        "edge-us-east-1-14.1.example.net",
+        "ingest-eu-central-1-14.2.example.net",
+        "core-ap-south-1-14.3.example.net"
+      ],
+      "tls": false
+    },
+    {
+      "kind": "redis",
+      "weight": 0.93,
+      "hosts": [
+        "core-eu-west-1-15.0.example.net",
+        "archive-eu-west-1-15.1.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "sqlite",
+      "weight": 0.37,
+      "hosts": [
+        "archive-eu-central-1-16.0.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "https",
+      "weight": 0.19,
+      "hosts": [
+        "ingest-ap-south-1-17.0.example.net",
+        "core-us-east-1-17.1.example.net",
+        "ingest-eu-central-1-17.2.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "sqlite",
+      "weight": 0.35,
+      "hosts": [
+        "edge-eu-west-1-18.0.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "kafka",
+      "weight": 0.78,
+      "hosts": [
+        "edge-eu-central-1-19.0.example.net",
+        "archive-us-east-1-19.1.example.net",
+        "archive-us-east-1-19.2.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "https",
+      "weight": 0.01,
+      "hosts": [
+        "archive-eu-west-1-20.0.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "s3",
+      "weight": 0.45,
+      "hosts": [
+        "edge-eu-central-1-21.0.example.net",
+        "core-eu-west-1-21.1.example.net",
+        "replica-ap-south-1-21.2.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "sqlite",
+      "weight": 0.24,
+      "hosts": [
+        "core-eu-west-1-22.0.example.net",
+        "archive-us-east-1-22.1.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "s3",
+      "weight": 0.53999996,
+      "hosts": [
+        "core-eu-central-1-23.0.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "kafka",
+      "weight": 0.82,
+      "hosts": [
+        "edge-us-east-1-24.0.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "redis",
+      "weight": 0.39999998,
+      "hosts": [
+        "archive-us-east-1-25.0.example.net",
+        "archive-us-east-1-25.1.example.net",
+        "archive-us-east-1-25.2.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "s3",
+      "weight": 0.01,
+      "hosts": [
+        "archive-ap-south-1-26.0.example.net",
+        "core-ap-south-1-26.1.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "grpc",
+      "weight": 0.53,
+      "hosts": [
+        "core-eu-west-1-27.0.example.net",
+        "ingest-ap-south-1-27.1.example.net",
+        "core-us-east-1-27.2.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "grpc",
+      "weight": 0.42999998,
+      "hosts": [
+        "edge-us-east-1-28.0.example.net"
+      ],
+      "tls": false
+    },
+    {
+      "kind": "grpc",
+      "weight": 0.75,
+      "hosts": [
+        "replica-ap-south-1-29.0.example.net",
+        "ingest-eu-west-1-29.1.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "grpc",
+      "weight": 0.59,
+      "hosts": [
+        "archive-eu-central-1-30.0.example.net",
+        "ingest-ap-south-1-30.1.example.net",
+        "core-us-east-1-30.2.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "sqlite",
+      "weight": 0.71999997,
+      "hosts": [
+        "ingest-ap-south-1-31.0.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "grpc",
+      "weight": 0.17999999,
+      "hosts": [
+        "core-ap-south-1-32.0.example.net",
+        "edge-eu-west-1-32.1.example.net",
+        "replica-ap-south-1-32.2.example.net"
+      ],
+      "tls": false
+    },
+    {
+      "kind": "sqlite",
+      "weight": 0.57,
+      "hosts": [
+        "ingest-eu-central-1-33.0.example.net",
+        "archive-eu-central-1-33.1.example.net",
+        "ingest-us-east-1-33.2.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "https",
+      "weight": 0.06,
+      "hosts": [
+        "core-ap-south-1-34.0.example.net",
+        "ingest-ap-south-1-34.1.example.net",
+        "ingest-ap-south-1-34.2.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "s3",
+      "weight": 1.0,
+      "hosts": [
+        "ingest-ap-south-1-35.0.example.net",
+        "core-eu-central-1-35.1.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "sqlite",
+      "weight": 0.83,
+      "hosts": [
+        "replica-ap-south-1-36.0.example.net",
+        "archive-us-east-1-36.1.example.net",
+        "edge-ap-south-1-36.2.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "s3",
+      "weight": 0.22,
+      "hosts": [
+        "edge-us-east-1-37.0.example.net",
+        "core-eu-central-1-37.1.example.net",
+        "replica-eu-west-1-37.2.example.net",
+        "core-us-east-1-37.3.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "sqlite",
+      "weight": 0.59999996,
+      "hosts": [
+        "replica-eu-west-1-38.0.example.net",
+        "edge-ap-south-1-38.1.example.net"
+      ],
+      "tls": true
+    },
+    {
+      "kind": "kafka",
+      "weight": 0.95,
+      "hosts": [
+        "edge-eu-west-1-39.0.example.net",
+        "archive-eu-central-1-39.1.example.net",
+        "ingest-ap-south-1-39.2.example.net"
+      ],
+      "tls": true
+    }
+  ]
+}

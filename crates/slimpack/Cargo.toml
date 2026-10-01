@@ -1,0 +1,18 @@
+[package]
+name = "slimpack"
+description = "Spec-first binary format for high-throughput telemetry and structured records (zero runtime dependencies)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords = ["binary", "serialization", "telemetry", "columnar", "zero-copy"]
+categories = ["encoding", "data-structures", "no-std"]
+
+# RULE: the core crate has ZERO runtime dependencies (std only).
+[dependencies]
+
+[dev-dependencies]
+
+[lints.rust]
+unsafe_code = "forbid"

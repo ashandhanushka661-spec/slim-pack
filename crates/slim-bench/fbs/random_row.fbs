@@ -1,0 +1,14 @@
+namespace slim_bench.fb;
+
+// Dataset f: high-entropy random floats and ints.
+table RandomRow {
+  f1: float;
+  f2: float;
+  f3: float;
+  f4: float;
+  i1: long;
+  i2: int;
+  i3: ulong;
+}
+
+root_type RandomRow;

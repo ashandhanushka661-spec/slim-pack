@@ -1,0 +1,12 @@
+namespace slim_bench.fb;
+
+// Datasets b-clean / b-noisy / b-adversarial.
+table Telemetry {
+  rsrp: byte;
+  band: ubyte;
+  speed: float;
+  timestamp: long;
+  cell_id: uint;
+}
+
+root_type Telemetry;

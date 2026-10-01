@@ -1,0 +1,28 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/slimpack",
+    "crates/slimpack-derive",
+    "crates/slim-cli",
+    "crates/slim-bench",
+]
+
+[workspace.package]
+version = "0.2.0"
+edition = "2021"
+rust-version = "1.85"
+license = "MIT"
+repository = "https://github.com/slim-pack/slim-pack"
+
+# Published benchmark numbers are produced with exactly this profile.
+# `panic = "abort"` applies to `cargo build --release` only; cargo forces
+# `panic = "unwind"` for the `test` and `bench` profiles, so every codec is
+# measured under identical codegen settings. See PROGRESS.md (decision D-0007).
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+
+[profile.bench]
+debug = false

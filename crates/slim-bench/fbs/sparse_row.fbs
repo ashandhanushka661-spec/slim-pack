@@ -1,0 +1,14 @@
+namespace slim_bench.fb;
+
+// Dataset g: sparse records, optional fields.
+table SparseRow {
+  id: uint;
+  ts: long;
+  kind: ubyte;
+  value: float;
+  label: string;
+  flag: bool;
+  extra: uint;
+}
+
+root_type SparseRow;

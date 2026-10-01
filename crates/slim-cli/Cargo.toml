@@ -1,0 +1,15 @@
+[package]
+name = "slim-cli"
+description = "slim: inspect, convert, bench and describe SlimPack payloads"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "slim"
+path = "src/main.rs"
+
+[dependencies]
+slimpack = { path = "../slimpack", version = "0.2.0" }
