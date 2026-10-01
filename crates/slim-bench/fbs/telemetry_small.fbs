@@ -2,7 +2,7 @@ namespace slim_bench.fb;
 
 // Dataset a: single telemetry record.
 table TelemetrySmall {
-  rsrp: byte;
+  rsrp: short;   // i16: -140..=-44 is not representable in i8 (D-0009)
   band: ubyte;
   speed: float;
 }

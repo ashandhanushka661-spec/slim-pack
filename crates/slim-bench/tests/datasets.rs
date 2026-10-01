@@ -9,7 +9,7 @@ use slim_bench::datasets::{
 };
 use slim_bench::gen::records::G_ABSENT;
 use slim_bench::gen::render_all;
-use slim_bench::gen::telemetry::{B_RECORDS, RSRP_MAX_I64, RSRP_MIN_I64};
+use slim_bench::gen::telemetry::{B_RECORDS, RSRP_MAX, RSRP_MIN};
 
 #[test]
 fn every_dataset_file_exists_and_is_non_trivial() {
@@ -56,9 +56,7 @@ fn b_variants_all_have_1000_records_in_rsrp_range() {
         datasets::b_adversarial(),
     ] {
         assert_eq!(rows.len(), B_RECORDS);
-        assert!(rows
-            .iter()
-            .all(|r| (RSRP_MIN_I64..=RSRP_MAX_I64).contains(&i64::from(r.rsrp))));
+        assert!(rows.iter().all(|r| (RSRP_MIN..=RSRP_MAX).contains(&r.rsrp)));
         assert!(rows.iter().all(|r| r.speed.is_finite() && r.speed >= 0.0));
         assert!(rows.iter().all(|r| r.timestamp > 0));
     }

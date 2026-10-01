@@ -21,20 +21,17 @@ pub const B_RECORDS: usize = 1000;
 /// First timestamp of the `b` variants (2023-11-14T22:13:20Z).
 pub const B_START_MS: i64 = 1_700_000_000_000;
 
-/// RSRP range actually generated.
+/// RSRP lower bound.
 ///
-/// DEVIATION (D-0009, see PROGRESS.md): the brief asks for
-/// `rsrp: i8 in -140..=-44`, but `-140` is **not representable in `i8`**
-/// (`i8::MIN == -128`). We keep the field type `i8` as specified and generate
-/// the representable part of the RSRP range, `-128..=-44`. Both ends still need
-/// 7 bits under `#[slim(range = ...)]`, so no published size result changes,
-/// and SPEC.md uses the same range in its worked example.
-///
-/// RSRP lower bound actually generated, see DEVIATION D-0009 above.
-pub const RSRP_MIN_I64: i64 = -128;
+/// Decision D-0009: `rsrp` is `i16`, not `i8`. The full RSRP range
+/// `-140..=-44` (97 values) does not fit in `i8` (`i8::MIN == -128`), so the
+/// field keeps its real domain and widens. `#[slim(range = -140..=-44)]` still
+/// packs it into 7 bits, so SlimPack payload sizes are unchanged, while every
+/// competitor that stores a raw `i16` grows by one byte per record.
+pub const RSRP_MIN: i16 = -140;
 
 /// RSRP upper bound.
-pub const RSRP_MAX_I64: i64 = -44;
+pub const RSRP_MAX: i16 = -44;
 
 /// The 12 cell ids of `b-clean`, in a seeded but stable order.
 fn shuffled_cells(rng: &mut Rng) -> Vec<u32> {
@@ -72,7 +69,7 @@ pub fn b_clean_records() -> Vec<Telemetry> {
     for i in 0..B_RECORDS {
         let cell = cells[(i / 50) % cells.len()];
         rows.push(Telemetry {
-            rsrp: rng.range_i64(RSRP_MIN_I64, RSRP_MAX_I64) as i8,
+            rsrp: rng.range_i64(i64::from(RSRP_MIN), i64::from(RSRP_MAX)) as i16,
             band: *rng.pick(BANDS),
             speed: rng.quantized_f32(0.0, 140.0, 0.5),
             timestamp: ts,
@@ -95,7 +92,7 @@ pub fn b_noisy_records() -> Vec<Telemetry> {
             cell = (cell + 1 + rng.below(500) as u32) % 100_000;
         }
         rows.push(Telemetry {
-            rsrp: rng.range_i64(RSRP_MIN_I64, RSRP_MAX_I64) as i8,
+            rsrp: rng.range_i64(i64::from(RSRP_MIN), i64::from(RSRP_MAX)) as i16,
             band: *rng.pick(BANDS),
             speed: rng.quantized_f32(0.0, 140.0, 0.5),
             timestamp: ts,
@@ -113,7 +110,7 @@ pub fn b_adversarial_records() -> Vec<Telemetry> {
     let mut rng = Rng::new(seed::B_ADVERSARIAL);
     (0..B_RECORDS)
         .map(|_| Telemetry {
-            rsrp: rng.range_i64(RSRP_MIN_I64, RSRP_MAX_I64) as i8,
+            rsrp: rng.range_i64(i64::from(RSRP_MIN), i64::from(RSRP_MAX)) as i16,
             band: *rng.pick(BANDS),
             speed: rng.quantized_f32(0.0, 140.0, 0.5),
             timestamp: rng.range_i64(0, 1_260_000_000_000),
@@ -135,9 +132,8 @@ mod tests {
         ] {
             assert_eq!(rows.len(), B_RECORDS);
             assert!(
-                rows.iter()
-                    .all(|r| (RSRP_MIN_I64..=RSRP_MAX_I64).contains(&i64::from(r.rsrp))),
-                "rsrp outside {RSRP_MIN_I64}..={RSRP_MAX_I64}"
+                rows.iter().all(|r| (RSRP_MIN..=RSRP_MAX).contains(&r.rsrp)),
+                "rsrp outside {RSRP_MIN}..={RSRP_MAX}"
             );
             assert!(rows.iter().all(|r| BANDS.contains(&r.band)));
             assert!(rows.iter().all(|r| (0.0..=140.0).contains(&r.speed)));

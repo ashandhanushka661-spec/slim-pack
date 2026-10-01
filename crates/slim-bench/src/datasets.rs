@@ -31,8 +31,9 @@ use serde::{Deserialize, Serialize};
     rkyv::Deserialize,
 )]
 pub struct TelemetrySmall {
-    /// Signal strength, dBm, always in `-140..=-44`.
-    pub rsrp: i8,
+    /// Signal strength, dBm, always in `-140..=-44` (decision D-0009: `i16`,
+    /// because `-140` is not representable in `i8`).
+    pub rsrp: i16,
     /// Band index from a small set.
     pub band: u8,
     /// Speed in km/h.
@@ -55,8 +56,9 @@ pub struct TelemetrySmall {
     rkyv::Deserialize,
 )]
 pub struct Telemetry {
-    /// Signal strength, dBm, always in `-140..=-44`.
-    pub rsrp: i8,
+    /// Signal strength, dBm, always in `-140..=-44` (decision D-0009: `i16`,
+    /// because `-140` is not representable in `i8`).
+    pub rsrp: i16,
     /// Band index from a small set.
     pub band: u8,
     /// Speed in km/h.

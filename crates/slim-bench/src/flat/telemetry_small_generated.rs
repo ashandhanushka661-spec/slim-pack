@@ -58,15 +58,15 @@ pub mod slim_bench {
             ) -> flatbuffers::WIPOffset<TelemetrySmall<'bldr>> {
                 let mut builder = TelemetrySmallBuilder::new(_fbb);
                 builder.add_speed(args.speed);
-                builder.add_band(args.band);
                 builder.add_rsrp(args.rsrp);
+                builder.add_band(args.band);
                 builder.finish()
             }
 
             #[inline]
-            pub fn rsrp(&self) -> i8 {
+            pub fn rsrp(&self) -> i16 {
                 self._tab
-                    .get::<i8>(TelemetrySmall::VT_RSRP, Some(0))
+                    .get::<i16>(TelemetrySmall::VT_RSRP, Some(0))
                     .unwrap()
             }
             #[inline]
@@ -91,7 +91,7 @@ pub mod slim_bench {
             ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
                 use self::flatbuffers::Verifiable;
                 v.visit_table(pos)?
-                    .visit_field::<i8>("rsrp", Self::VT_RSRP, false)?
+                    .visit_field::<i16>("rsrp", Self::VT_RSRP, false)?
                     .visit_field::<u8>("band", Self::VT_BAND, false)?
                     .visit_field::<f32>("speed", Self::VT_SPEED, false)?
                     .finish();
@@ -99,7 +99,7 @@ pub mod slim_bench {
             }
         }
         pub struct TelemetrySmallArgs {
-            pub rsrp: i8,
+            pub rsrp: i16,
             pub band: u8,
             pub speed: f32,
         }
@@ -120,8 +120,8 @@ pub mod slim_bench {
         }
         impl<'a: 'b, 'b> TelemetrySmallBuilder<'a, 'b> {
             #[inline]
-            pub fn add_rsrp(&mut self, rsrp: i8) {
-                self.fbb_.push_slot::<i8>(TelemetrySmall::VT_RSRP, rsrp, 0);
+            pub fn add_rsrp(&mut self, rsrp: i16) {
+                self.fbb_.push_slot::<i16>(TelemetrySmall::VT_RSRP, rsrp, 0);
             }
             #[inline]
             pub fn add_band(&mut self, band: u8) {

@@ -62,14 +62,14 @@ pub mod slim_bench {
                 builder.add_timestamp(args.timestamp);
                 builder.add_cell_id(args.cell_id);
                 builder.add_speed(args.speed);
-                builder.add_band(args.band);
                 builder.add_rsrp(args.rsrp);
+                builder.add_band(args.band);
                 builder.finish()
             }
 
             #[inline]
-            pub fn rsrp(&self) -> i8 {
-                self._tab.get::<i8>(Telemetry::VT_RSRP, Some(0)).unwrap()
+            pub fn rsrp(&self) -> i16 {
+                self._tab.get::<i16>(Telemetry::VT_RSRP, Some(0)).unwrap()
             }
             #[inline]
             pub fn band(&self) -> u8 {
@@ -103,7 +103,7 @@ pub mod slim_bench {
             ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
                 use self::flatbuffers::Verifiable;
                 v.visit_table(pos)?
-                    .visit_field::<i8>("rsrp", Self::VT_RSRP, false)?
+                    .visit_field::<i16>("rsrp", Self::VT_RSRP, false)?
                     .visit_field::<u8>("band", Self::VT_BAND, false)?
                     .visit_field::<f32>("speed", Self::VT_SPEED, false)?
                     .visit_field::<i64>("timestamp", Self::VT_TIMESTAMP, false)?
@@ -113,7 +113,7 @@ pub mod slim_bench {
             }
         }
         pub struct TelemetryArgs {
-            pub rsrp: i8,
+            pub rsrp: i16,
             pub band: u8,
             pub speed: f32,
             pub timestamp: i64,
@@ -138,8 +138,8 @@ pub mod slim_bench {
         }
         impl<'a: 'b, 'b> TelemetryBuilder<'a, 'b> {
             #[inline]
-            pub fn add_rsrp(&mut self, rsrp: i8) {
-                self.fbb_.push_slot::<i8>(Telemetry::VT_RSRP, rsrp, 0);
+            pub fn add_rsrp(&mut self, rsrp: i16) {
+                self.fbb_.push_slot::<i16>(Telemetry::VT_RSRP, rsrp, 0);
             }
             #[inline]
             pub fn add_band(&mut self, band: u8) {

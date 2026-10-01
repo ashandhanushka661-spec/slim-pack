@@ -159,23 +159,28 @@ are rejected with `SlimError::UnsupportedLayout` in this draft.
 
 ### 2.5 Worked hex example
 
-Type: `{ rsrp: i8 range(-128..=-44), band: u8, speed: f32 }`, value
+Type: `{ rsrp: i16 range(-140..=-44), band: u8, speed: f32 }`, value
 `{ rsrp: -103, band: 3, speed: 27.5 }`.
 
-> The brief for this project says `rsrp: i8 in -140..=-44`. `-140` is **not
-> representable in `i8`** (`i8::MIN == -128`), so the representable part of the
-> RSRP range is used. Both ends need 7 bits either way, so no published size
-> result depends on this. See decision **D-0009**.
+> **DECISION D-0009 (resolved): `rsrp` is `i16`, not `i8`.** The RSRP range
+> `-140..=-44` (97 values) is the real telemetry range and is **not
+> representable in `i8`** (`i8::MIN == -128`). Rather than narrowing the range
+> to what `i8` can hold, the field keeps its full domain and widens to `i16`;
+> `#[slim(range = -140..=-44)]` still packs it into **7 bits**, so a SlimPack
+> `packed` payload is the same size as an `i8` one, while every competitor
+> that stores raw `i16` grows by one byte per record. The comparison is
+> therefore run against the *larger* competitor bytes.
 
-`27.5f32` has bit pattern `0x41DC0000`.
+`27.5f32` has bit pattern `0x41DC0000`. The `range` attribute covers 97
+values, so it needs `ceil(log2(97)) = 7` bits.
 
-**`aligned`** — widths 1 + 1 + 4 = 6 bytes:
+**`aligned`** — widths 2 + 1 + 4 = 7 bytes (`range` has no effect here, §2.2):
 
 ```
-99 03 00 00 dc 41
-^^ rsrp = -103        = 0x99
-   ^^ band  = 3       = 0x03
-      ^^^^^^ speed    = 0x41DC0000 LE
+99 ff 03 00 00 dc 41
+^^^^ rsrp = -103 = 0xFF9D LE (two's complement)
+    ^^ band  = 3
+       ^^^^^^ speed = 0x41DC0000 LE
 ```
 
 Full file for one record (Bare, no `EXT` section):
@@ -187,16 +192,17 @@ Full file for one record (Bare, no `EXT` section):
 00            flags (neither LOSSY nor EXT)
 00            reserved
 01            varint record_count = 1
-06            varint stride = 6
-99 03 00 00 dc 41
+07            varint stride = 7
+99 ff 03 00 00 dc 41
 ```
 
 **`packed`** — widths 7 (`range`) + 8 (`u8`) + 32 (`f32`) = 47 bits → 6 bytes
-with 1 zero padding bit in the high position of byte 5:
+with 1 zero padding bit in the high position of byte 5. `rsrp` is stored as
+`-103 - (-140) = 37 = 0b0100101`:
 
 ```
-99 01 00 00 ee 20
-^^ byte 0 = bits 0..7  : rsrp bits 0..6 = 25 = 0b0011001, band bit 0 in bit 7
+a5 01 00 00 ee 20
+^^ byte 0 = bits 0..7  : rsrp bits 0..6 = 37 = 0b0100101, band bit 0 in bit 7
    ^^ byte 1 = bits 8..15: band bit 1 in bit 0, speed bit 0 in bit 7 (= 0)
       ^^ byte 2 = bits 16..23: speed bits 1..8        (all 0 here)
          ^^ byte 3 = bits 24..31: speed bits 9..16    (all 0 here)
@@ -205,8 +211,8 @@ with 1 zero padding bit in the high position of byte 5:
                                     bit 7 is the zero padding bit
 ```
 
-Verification of the interesting bytes: `band = 3 = 0b11` contributes bit 7
-(byte 0, giving `0x80 | 0x19 = 0x99`) and bit 8 (byte 1 bit 0, giving `0x01`).
+Verification of the interesting bytes: byte 0 is `37 | (3 & 1) << 7 =
+0x25 | 0x80 = 0xA5`; `band`'s second bit lands in byte 1 bit 0, giving `0x01`.
 `speed = 0x41DC0000` starts at bit 15, so its low 16 bits (`0x0000`) vanish
 into bytes 1–3 and its top 16 bits (`0x41DC`) land in bytes 4–5 as `ee 20`
 once shifted by the 15-bit offset.
@@ -214,7 +220,7 @@ once shifted by the 15-bit offset.
 **`packed` with `bits = 3` on `band`** — 7 + 3 + 32 = 42 bits → 6 bytes:
 
 ```
-99 01 00 70 07 01
+a5 01 00 70 07 01
 ```
 
 ### 2.6 Default layout choice
@@ -482,7 +488,7 @@ by both the derive macro and `slim schema layout`, so they can never disagree.
 
 ```
 struct Telemetry {
-  rsrp:  i8  range(-128, -44);
+  rsrp:  i16 range(-140, -44);
   band:  u8;
   speed: f32;
 }

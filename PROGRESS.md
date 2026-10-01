@@ -130,11 +130,32 @@ All competitors live in `crates/slim-bench` only. Resolved with
   random mantissa instead of fully random bits, because JSON cannot express
   NaN/infinity and `serde_json` would silently write `null`. Entropy is still
   maximal over the finite float space.
-* **D-0009 — DEVIATION.** The brief asks for `rsrp: i8 in -140..=-44`, but
-  `-140` is **not representable in `i8`** (`i8::MIN == -128`). Datasets and the
-  worked hex example in `spec/SPEC.md` use the representable range
-  `-128..=-44`; the field type stays `i8` as specified. Both ends need 7 bits
-  under `#[slim(range = ...)]`, so no published size result changes.
+* **D-0009 — RESOLVED: `rsrp` is `i16` with `range = -140..=-44`.** The brief
+  asks for `rsrp: i8 in -140..=-44`, but `-140` is **not representable in
+  `i8`** (`i8::MIN == -128`). Phase 0 initially narrowed the range to the
+  representable `-128..=-44`; that was rejected because it silently changes the
+  data. The field therefore keeps its full domain and widens to `i16`
+  everywhere: SPEC.md §2.5 worked example (recomputed hex below), the
+  `.slimschema` example, `Telemetry`/`TelemetrySmall` in `slim-bench`, the
+  `flatc` schemas (`rsrp: short`) and all three `b` datasets. Consequences, in
+  the direction that matters:
+  * `#[slim(range = -140..=-44)]` still needs **7 bits** (97 values), so a
+    SlimPack `packed` payload is exactly the same size as before;
+  * every competitor that stores a raw `i16` grows by **one byte per record**,
+    so the "smaller than X" comparisons run against *larger* competitor bytes.
+    This is stated in the README, not hidden.
+  * The rejected alternative is recorded here rather than deleted: it would
+    have made competitors 1 byte/record smaller and was therefore a
+    self-serving choice.
+
+  Worked hex for `{rsrp: i16 range(-140..=-44), band: u8, speed: f32}` =
+  `{rsrp: -103, band: 3, speed: 27.5}` (verified by bit arithmetic):
+
+  | layout | bytes | notes |
+  |--------|-------|-------|
+  | `aligned` | `99 ff 03 00 00 dc 41` | 2 + 1 + 4 = 7 bytes; `range` has no effect |
+  | `packed` | `a5 01 00 00 ee 20` | 7 + 8 + 32 = 47 bits, 1 padding bit; `rsrp` stored as `-103 + 140 = 37 = 0b0100101` |
+  | `packed`, `band bits = 3` | `a5 01 00 70 07 01` | 7 + 3 + 32 = 42 bits |
 * **D-0010** Dynamic mode keeps `Float` as raw `f64` only. An `f32` form is
   *reserved* and rejected in v1, because downcasting `f64 → f32` would break
   the bit-exactness rule.
@@ -150,6 +171,12 @@ All competitors live in `crates/slim-bench` only. Resolved with
 
 ## Issues and open questions
 
+0. **Dataset change log (only change after Phase 0, before any measurement).**
+   `rsrp` widened from `i8`/`-128..=-44` to `i16`/`-140..=-44` (D-0009), so
+   `b-clean`, `b-noisy` and `b-adversarial` were regenerated: 78 919 → 79 033,
+   79 694 → 79 806 and 83 812 → 83 903 bytes. **No benchmark has run yet**, so
+   nothing can have been tuned to these numbers. From here on, datasets are
+   frozen (Phase 3 start).
 1. **`nproc` = 2.** Criterion measures single-threaded, so this costs wall-clock
    time, not comparability. Full Phase 3 run will take a while; `sample_size`
    and `measurement_time` are left at criterion defaults so nothing can be
