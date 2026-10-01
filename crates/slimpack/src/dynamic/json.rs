@@ -191,7 +191,7 @@ impl<'a> Parser<'a> {
         self.limits.check_depth(self.depth + 1)?;
         self.expect(b'[')?;
         self.depth += 1;
-        let mut items = Vec::new();
+        let mut items = Vec::with_capacity(4);
         self.skip_whitespace();
         if self.peek()? == b']' {
             self.pos += 1;
@@ -218,7 +218,7 @@ impl<'a> Parser<'a> {
         self.limits.check_depth(self.depth + 1)?;
         self.expect(b'{')?;
         self.depth += 1;
-        let mut pairs: Vec<(String, Value)> = Vec::new();
+        let mut pairs: Vec<(String, Value)> = Vec::with_capacity(4);
         self.skip_whitespace();
         if self.peek()? == b'}' {
             self.pos += 1;
@@ -249,45 +249,51 @@ impl<'a> Parser<'a> {
 
     fn string(&mut self) -> Result<String> {
         self.expect(b'"')?;
-        let mut out = String::new();
+        let mut out = Vec::with_capacity((self.bytes.len() - self.pos).min(128));
         loop {
+            let start = self.pos;
             let byte = self.peek()?;
-            self.pos += 1;
             match byte {
-                b'"' => return Ok(out),
+                b'"' => {
+                    self.pos += 1;
+                    return String::from_utf8(out).map_err(|_| SlimError::InvalidUtf8);
+                }
                 b'\\' => {
+                    self.pos += 1;
                     let escape = self.peek()?;
                     self.pos += 1;
                     match escape {
-                        b'"' => out.push('"'),
-                        b'\\' => out.push('\\'),
-                        b'/' => out.push('/'),
-                        b'b' => out.push('\u{08}'),
-                        b'f' => out.push('\u{0C}'),
-                        b'n' => out.push('\n'),
-                        b'r' => out.push('\r'),
-                        b't' => out.push('\t'),
-                        b'u' => out.push(self.unicode_escape()?),
+                        b'"' => out.push(b'"'),
+                        b'\\' => out.push(b'\\'),
+                        b'/' => out.push(b'/'),
+                        b'b' => out.push(0x08),
+                        b'f' => out.push(0x0C),
+                        b'n' => out.push(b'\n'),
+                        b'r' => out.push(b'\r'),
+                        b't' => out.push(b'\t'),
+                        b'u' => {
+                            let ch = self.unicode_escape()?;
+                            let mut buf = [0u8; 4];
+                            let encoded = ch.encode_utf8(&mut buf);
+                            out.extend_from_slice(encoded.as_bytes());
+                        }
                         _ => return Err(SlimError::InvalidUtf8),
                     }
                 }
                 byte if byte < 0x20 => {
                     return Err(SlimError::UnsupportedLayout(
                         "raw control character in JSON string",
-                    ))
+                    ));
                 }
-                byte => {
-                    // Copy one whole UTF-8 sequence.
+                byte if byte < 0x80 => {
+                    out.push(byte);
+                    self.pos += 1;
+                }
+                _ => {
                     let len = utf8_len(byte);
-                    let end = self
-                        .pos
-                        .checked_add(len - 1)
-                        .ok_or(SlimError::SizeOverflow)?;
-                    let slice = self
-                        .bytes
-                        .get(self.pos - 1..end)
-                        .ok_or_else(|| SlimError::truncated(end, self.bytes.len()))?;
-                    out.push_str(std::str::from_utf8(slice).map_err(|_| SlimError::InvalidUtf8)?);
+                    let end = start.checked_add(len).ok_or(SlimError::SizeOverflow)?;
+                    let slice = self.bytes.get(start..end).ok_or_else(|| SlimError::truncated(end, self.bytes.len()))?;
+                    out.extend_from_slice(slice);
                     self.pos = end;
                 }
             }

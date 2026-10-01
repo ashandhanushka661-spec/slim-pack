@@ -1092,6 +1092,9 @@ dependencies = [
 [[package]]
 name = "slimpack"
 version = "0.2.0"
+dependencies = [
+ "proptest",
+]
 
 [[package]]
 name = "slimpack-derive"

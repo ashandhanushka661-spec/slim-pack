@@ -18,6 +18,7 @@
 //! * lossy features (quantization) are explicit per-field opt-ins and are
 //!   never reported in lossless results.
 
+pub mod batch;
 pub mod dynamic;
 mod error;
 pub mod fixed;
@@ -31,3 +32,15 @@ pub use error::{Limit, Result, SlimError};
 pub use header::{Header, Section};
 pub use limits::Limits;
 pub use schema::{Attr, FieldSpec, Layout, LayoutKind, StructSpec, Type};
+
+/// Marker trait for types that participate in the SlimPack schema system.
+pub trait SlimPack: Sized {
+    /// Returns the schema for this Rust type, as used by the shared layout
+    /// engine and the derive macro.
+    fn slim_schema() -> StructSpec;
+
+    /// Computes the fixed layout for this type in the requested mode.
+    fn slim_layout(kind: LayoutKind) -> Result<Layout> {
+        Layout::compute(&Self::slim_schema(), kind)
+    }
+}

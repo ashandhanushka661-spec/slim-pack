@@ -13,6 +13,7 @@ categories = ["encoding", "data-structures", "no-std"]
 [dependencies]
 
 [dev-dependencies]
+proptest = "=1.11.0"
 
 [lints.rust]
 unsafe_code = "forbid"

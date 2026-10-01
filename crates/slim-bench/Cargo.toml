@@ -33,6 +33,10 @@ proptest = "=1.11.0"
 name = "gen-datasets"
 path = "src/bin/gen_datasets.rs"
 
+[[bench]]
+name = "bench"
+harness = false
+
 [lib]
 name = "slim_bench"
 path = "src/lib.rs"

@@ -131,6 +131,8 @@ impl Limits {
 
 #[cfg(test)]
 mod tests {
+    use proptest::prelude::*;
+
     use super::*;
 
     #[test]
@@ -285,5 +287,35 @@ mod tests {
         assert_eq!(none.check_total(0).unwrap(), 0);
         assert!(none.check_depth(1).is_err());
         assert_eq!(none.check_dictionary(0).unwrap(), 0);
+    }
+
+    proptest! {
+        #[test]
+        fn check_len_is_consistent_for_small_values(
+            declared in 0u64..=DEFAULT_MAX_LEN,
+            remaining in 0usize..=DEFAULT_MAX_LEN as usize,
+        ) {
+            let l = Limits::default();
+            let result = l.check_len(declared, remaining);
+            let expected_ok = declared <= l.max_len && declared <= remaining as u64;
+            if expected_ok {
+                assert_eq!(result.unwrap(), declared as usize);
+            } else {
+                assert!(result.is_err());
+            }
+        }
+
+        #[test]
+        fn check_count_matches_its_declared_limit(
+            value in 0u64..=DEFAULT_MAX_RECORDS + 1,
+        ) {
+            let l = Limits::default();
+            let result = l.check_records(value);
+            if value <= l.max_records {
+                assert_eq!(result.unwrap(), value as usize);
+            } else {
+                assert!(matches!(result, Err(SlimError::LimitExceeded { limit: Limit::Records, .. })));
+            }
+        }
     }
 }
